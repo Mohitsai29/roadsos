@@ -13,76 +13,42 @@ st.markdown("""
 * { font-family: 'Inter', sans-serif !important; box-sizing: border-box; }
 #MainMenu, footer, header { visibility: hidden !important; }
 .stApp { background: #f5f3ff; }
+.block-container { padding: 1.5rem 2rem !important; max-width: 1400px !important; }
 
-.hero {
-    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-    border-radius: 20px; padding: 2rem 2.5rem;
-    margin-bottom: 1.5rem; position: relative; overflow: hidden;
-}
+.hero { background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); border-radius: 20px; padding: 2rem 2.5rem; margin-bottom: 1.5rem; }
 .hero h1 { font-size: 1.9rem; font-weight: 700; color: white !important; margin: 0 0 0.3rem; }
 .hero p { color: rgba(255,255,255,0.82) !important; margin: 0; font-size: 0.93rem; }
-.hero-badge {
-    display: inline-block; background: rgba(255,255,255,0.18);
-    color: white !important; border-radius: 20px; padding: 3px 14px;
-    font-size: 0.78rem; font-weight: 600; margin-bottom: 0.7rem;
-}
+.hero-badge { display: inline-block; background: rgba(255,255,255,0.18); color: white !important; border-radius: 20px; padding: 3px 14px; font-size: 0.78rem; font-weight: 600; margin-bottom: 0.7rem; }
 
-.loc-box {
-    background: white; border-radius: 16px; padding: 1.5rem;
-    border: 1px solid #ede9fe; margin-bottom: 1.5rem;
-}
-.loc-box-title {
-    font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
-    letter-spacing: 1.3px; color: #4f46e5; margin-bottom: 1rem; display: block;
-}
+.card { background: white; border-radius: 16px; padding: 1.5rem; border: 1px solid #ede9fe; margin-bottom: 1.2rem; }
+.clabel { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.3px; color: #4f46e5; margin-bottom: 0.8rem; display: block; }
 
-.num-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin-bottom: 1.5rem; }
-.num-card {
-    background: white; border-radius: 14px; padding: 1rem 0.8rem;
-    text-align: center; border: 1px solid #ede9fe; transition: all 0.2s;
-}
-.num-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(79,70,229,0.12); }
+.num-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin-bottom: 1.2rem; }
+.num-card { background: white; border-radius: 14px; padding: 1rem; text-align: center; border: 1px solid #ede9fe; }
 .num-card .ni { font-size: 1.4rem; margin-bottom: 4px; }
 .num-card .nn { font-size: 1.6rem; font-weight: 700; color: #4f46e5; line-height: 1; }
 .num-card .nl { font-size: 0.72rem; color: #94a3b8; margin-top: 3px; }
 
-.sos-card {
-    background: linear-gradient(135deg, #dc2626, #b91c1c);
-    border-radius: 18px; padding: 1.3rem 1.8rem; margin-bottom: 1.5rem;
-    display: flex; align-items: center; justify-content: space-between;
-    flex-wrap: wrap; gap: 1rem;
-    box-shadow: 0 8px 28px rgba(220,38,38,0.22);
-}
+.sos-card { background: linear-gradient(135deg, #dc2626, #b91c1c); border-radius: 18px; padding: 1.3rem 1.8rem; margin-bottom: 1.2rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; box-shadow: 0 8px 28px rgba(220,38,38,0.2); }
 .sos-title { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: rgba(255,255,255,0.7) !important; margin-bottom: 3px; }
 .sos-name { font-size: 1.05rem; font-weight: 700; color: white !important; }
 .sos-dist { font-size: 0.82rem; color: rgba(255,255,255,0.75) !important; margin-top: 2px; }
-.call-now {
-    display: inline-block; background: white; color: #dc2626 !important;
-    border-radius: 50px; padding: 0.7rem 2rem; font-weight: 700;
-    font-size: 1rem; text-decoration: none !important;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15); transition: all 0.15s; white-space: nowrap;
-}
-.call-now:hover { transform: scale(1.03); color: #dc2626 !important; }
+.call-now { display: inline-block; background: white; color: #dc2626 !important; border-radius: 50px; padding: 0.7rem 2rem; font-weight: 700; font-size: 1rem; text-decoration: none !important; white-space: nowrap; }
 
-.stTabs [data-baseweb="tab-list"] {
-    background: white !important; border-radius: 14px !important;
-    padding: 5px !important; border: 1px solid #ede9fe !important;
-    gap: 4px !important; margin-bottom: 1rem !important;
-}
-.stTabs [data-baseweb="tab"] {
-    border-radius: 10px !important; font-size: 0.9rem !important;
-    font-weight: 500 !important; color: #94a3b8 !important; padding: 0.55rem 1.4rem !important;
-}
-.stTabs [aria-selected="true"] {
-    background: linear-gradient(135deg, #4f46e5, #7c3aed) !important; color: white !important;
-}
+.radius-badge { display: inline-flex; align-items: center; gap: 6px; background: #ede9fe; color: #4f46e5; border: 1px solid #c7d2fe; border-radius: 20px; padding: 4px 14px; font-size: 0.82rem; font-weight: 600; margin: 0.4rem 0; }
+.search-progress { background: white; border-radius: 14px; padding: 1rem 1.2rem; border: 1px solid #ede9fe; margin-bottom: 1rem; }
+.progress-step { display: flex; align-items: center; gap: 10px; padding: 5px 0; font-size: 0.85rem; color: #1e1b4b; }
+.step-done { color: #16a34a; font-weight: 600; }
+.step-active { color: #4f46e5; font-weight: 600; }
+.step-wait { color: #94a3b8; }
 
-.svc {
-    background: white; border-radius: 14px; padding: 1rem 1.2rem;
-    margin: 0.5rem 0; border: 1px solid #ede9fe; border-left: 4px solid #4f46e5;
-}
+.stTabs [data-baseweb="tab-list"] { background: white !important; border-radius: 14px !important; padding: 5px !important; border: 1px solid #ede9fe !important; gap: 4px !important; }
+.stTabs [data-baseweb="tab"] { border-radius: 10px !important; font-size: 0.9rem !important; font-weight: 500 !important; color: #94a3b8 !important; padding: 0.55rem 1.4rem !important; }
+.stTabs [aria-selected="true"] { background: linear-gradient(135deg, #4f46e5, #7c3aed) !important; color: white !important; }
+
+.svc { background: white; border-radius: 14px; padding: 1rem 1.2rem; margin: 0.5rem 0; border: 1px solid #ede9fe; border-left: 4px solid #4f46e5; }
 .svc .sname { font-weight: 600; color: #1e1b4b; font-size: 0.92rem; }
-.svc .sphone { color: #64748b; font-size: 0.8rem; margin-top: 2px; }
+.svc .sph { color: #64748b; font-size: 0.8rem; margin-top: 2px; }
 .svc-dist { display: inline-block; background: #ede9fe; color: #4f46e5; font-size: 0.72rem; font-weight: 600; padding: 2px 10px; border-radius: 20px; margin-top: 5px; }
 .call-svc { display: inline-block; background: #dcfce7; color: #16a34a !important; font-size: 0.75rem; font-weight: 700; padding: 2px 12px; border-radius: 20px; margin-top: 5px; margin-left: 6px; text-decoration: none !important; border: 1px solid #bbf7d0; }
 
@@ -90,35 +56,88 @@ st.markdown("""
 .ref { background: white; border-radius: 14px; padding: 1.3rem; border: 1px solid #ede9fe; line-height: 1.9; color: #1e1b4b; font-size: 0.87rem; }
 .tip { background: #ede9fe; border-radius: 10px; padding: 0.65rem 1rem; font-size: 0.85rem; color: #4338ca; margin-bottom: 1rem; border: 1px solid #c7d2fe; }
 .empty { text-align: center; padding: 3rem 2rem; background: white; border-radius: 18px; border: 1px solid #ede9fe; }
-.quick-dial { background: #1e1b4b; border-radius: 14px; padding: 1rem 1.2rem; }
-.qdrow { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: 1px solid #312e81; }
-.qdrow:last-child { border-bottom: none; }
-.qdnum { font-size: 1.1rem; font-weight: 700; color: #818cf8 !important; }
 
-.stButton > button {
-    background: linear-gradient(135deg, #4f46e5, #7c3aed) !important;
-    color: white !important; border: none !important; border-radius: 12px !important;
-    font-weight: 600 !important; padding: 0.6rem 1.8rem !important;
-    font-size: 0.95rem !important; transition: all 0.2s !important;
-}
+.stButton > button { background: linear-gradient(135deg, #4f46e5, #7c3aed) !important; color: white !important; border: none !important; border-radius: 12px !important; font-weight: 600 !important; padding: 0.65rem 1.5rem !important; font-size: 0.93rem !important; transition: all 0.2s !important; width: 100% !important; }
 .stButton > button:hover { opacity: 0.88 !important; transform: translateY(-1px) !important; }
-.stTextInput > div > div > input {
-    border-radius: 12px !important; border: 1.5px solid #ede9fe !important;
-    color: #1e1b4b !important; font-size: 0.93rem !important;
-    padding: 0.65rem 1rem !important; height: 48px !important;
-}
+.stTextInput > div > div > input { border-radius: 12px !important; border: 1.5px solid #ede9fe !important; color: #1e1b4b !important; font-size: 0.93rem !important; padding: 0.65rem 1rem !important; background: white !important; }
 .stTextInput > div > div > input:focus { border-color: #4f46e5 !important; box-shadow: 0 0 0 3px rgba(79,70,229,0.1) !important; }
-.stTextArea > div > div > textarea { border-radius: 12px !important; border: 1.5px solid #ede9fe !important; color: #1e1b4b !important; font-size: 0.93rem !important; }
-.stTextArea > div > div > textarea:focus { border-color: #4f46e5 !important; }
-.stSlider > div > div > div > div { background: #4f46e5 !important; }
+.stTextArea > div > div > textarea { border-radius: 12px !important; border: 1.5px solid #ede9fe !important; color: #1e1b4b !important; font-size: 0.93rem !important; background: white !important; }
 div[data-testid="stChatMessage"] { background: white !important; border-radius: 14px !important; border: 1px solid #ede9fe !important; margin: 0.4rem 0 !important; }
 </style>
 """, unsafe_allow_html=True)
 
-# Session state
-for key, default in [("chat_history",[]),("services",None),("user_location",None)]:
+# ── Session state ──
+for key, default in [
+    ("chat_history", []),
+    ("services", None),
+    ("user_location", None),
+    ("search_radius_used", None)
+]:
     if key not in st.session_state:
         st.session_state[key] = default
+
+def auto_search(lat, lon):
+    """Search starting from 0.5 km, incrementing by 0.5 km until services found or 20 km reached."""
+    radius = 0.5
+    max_radius = 20.0
+    step = 0.5
+
+    progress_placeholder = st.empty()
+
+    while radius <= max_radius:
+        # Show live progress
+        radius_m = radius * 1000
+        if radius_m >= 1000:
+            radius_label = f"{radius:.1f} km"
+        else:
+            radius_label = f"{int(radius_m)} m"
+
+        progress_placeholder.markdown(f"""
+        <div class="search-progress">
+            <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:1.3px;color:#4f46e5;margin-bottom:0.6rem;">
+                🔍 Auto-searching nearby services...
+            </div>
+            <div class="progress-step step-active">
+                ⏳ Searching within <b>{radius_label}</b> of your location...
+            </div>
+            <div class="progress-step step-wait" style="margin-top:4px;font-size:0.78rem;">
+                Will expand up to 20 km automatically if needed
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+        services = find_nearby_services(lat, lon, radius)
+        total = sum(len(v) for v in services.values())
+
+        if total > 0:
+            progress_placeholder.markdown(f"""
+            <div class="search-progress">
+                <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:1.3px;color:#16a34a;margin-bottom:0.6rem;">
+                    ✅ Services found!
+                </div>
+                <div class="progress-step step-done">
+                    ✅ Found <b>{total} services</b> within <b>{radius_label}</b>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+            st.session_state.search_radius_used = radius
+            return services, radius
+
+        radius = round(radius + step, 1)
+
+    # Nothing found even at 20 km
+    progress_placeholder.markdown(f"""
+    <div class="search-progress">
+        <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:1.3px;color:#dc2626;margin-bottom:0.6rem;">
+            ⚠️ Search complete
+        </div>
+        <div class="progress-step" style="color:#dc2626;">
+            No services found within 20 km. Please call 112 directly.
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+    st.session_state.search_radius_used = max_radius
+    return {}, max_radius
 
 # ══════════════════════════════════════
 # HERO
@@ -132,155 +151,147 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ══════════════════════════════════════
-# LOCATION + QUICK DIAL ROW
+# LOCATION SECTION
 # ══════════════════════════════════════
-loc_col, dial_col = st.columns([3, 1])
+st.markdown('<div class="card">', unsafe_allow_html=True)
+st.markdown('<span class="clabel">📍 Step 1 — Detect Your Location & Auto-Search</span>', unsafe_allow_html=True)
 
-with loc_col:
-    st.markdown('<div class="loc-box">', unsafe_allow_html=True)
-    st.markdown('<span class="loc-box-title">📍 Your Location</span>', unsafe_allow_html=True)
+col_gps, col_dial = st.columns([3, 1])
 
-    # GPS Component
+with col_gps:
     st.components.v1.html("""
     <style>
     body { margin:0; padding:0; background:transparent; }
-    #gps-btn {
-        background: #4f46e5; color: white; border: none; border-radius: 12px;
-        padding: 13px 20px; font-size: 15px; font-weight: 600; cursor: pointer;
-        width: 100%; font-family: Inter,sans-serif; transition: background 0.2s; margin-bottom: 8px;
-    }
-    #gps-btn:hover { background: #4338ca; }
-    #gps-status {
-        font-size: 13px; padding: 10px 12px; border-radius: 10px;
-        font-family: Inter,sans-serif; background: #ede9fe;
-        color: #4f46e5; line-height: 1.5; min-height: 40px;
-    }
+    #gb { background:#4f46e5; color:white; border:none; border-radius:12px; padding:14px 20px; font-size:15px; font-weight:600; cursor:pointer; width:100%; font-family:Inter,sans-serif; margin-bottom:10px; transition:background 0.2s; }
+    #gb:hover { background:#4338ca; }
+    #gs { font-size:13px; padding:10px 14px; border-radius:10px; font-family:Inter,sans-serif; background:#ede9fe; color:#4338ca; line-height:1.5; min-height:38px; }
     </style>
-    <button id="gps-btn" onclick="getGPS()">📍 Detect My Exact GPS Location</button>
-    <div id="gps-status">Tap the button above — your browser will ask for location permission</div>
+    <button id="gb" onclick="go()">📍 Detect My Exact GPS Location</button>
+    <div id="gs">Tap above — browser will ask for your location permission</div>
     <script>
-    function getGPS() {
-        var btn = document.getElementById('gps-btn');
-        var stat = document.getElementById('gps-status');
-        btn.innerText = '⏳ Detecting your location...';
-        btn.disabled = true;
-        stat.style.background = '#fef3c7';
-        stat.style.color = '#92400e';
-        stat.innerText = 'Requesting GPS permission...';
-        if (!navigator.geolocation) {
-            stat.style.background = '#fee2e2'; stat.style.color = '#991b1b';
-            stat.innerText = '❌ GPS not supported. Type your city name below.';
-            btn.innerText = '📍 Detect GPS'; btn.disabled = false; return;
+    function go() {
+        var b=document.getElementById('gb'), s=document.getElementById('gs');
+        b.innerText='⏳ Detecting...'; b.disabled=true;
+        s.style.background='#fef3c7'; s.style.color='#92400e';
+        s.innerText='Requesting GPS permission...';
+        if(!navigator.geolocation){
+            s.style.background='#fee2e2'; s.style.color='#991b1b';
+            s.innerText='❌ GPS not available. Type city below.';
+            b.innerText='📍 Detect GPS'; b.disabled=false; return;
         }
-        navigator.geolocation.getCurrentPosition(
-            function(pos) {
-                var lat = pos.coords.latitude.toFixed(6);
-                var lon = pos.coords.longitude.toFixed(6);
-                var val = lat + ', ' + lon;
-                stat.style.background = '#dcfce7'; stat.style.color = '#166534';
-                stat.innerText = '✅ GPS detected: ' + val + '  →  Now click USE LOCATION button below';
-                btn.innerText = '✅ GPS Ready!'; btn.style.background = '#059669';
-                var tries = 0;
-                var fill = setInterval(function() {
-                    tries++;
-                    var inputs = window.parent.document.querySelectorAll('input[type=text]');
-                    for (var i = 0; i < inputs.length; i++) {
-                        var ph = (inputs[i].getAttribute('placeholder') || '').toLowerCase();
-                        if (ph.includes('gps') || ph.includes('city') || ph.includes('type') || ph.includes('enter')) {
-                            inputs[i].value = val;
-                            inputs[i].dispatchEvent(new Event('input', {bubbles:true}));
-                            inputs[i].dispatchEvent(new Event('change', {bubbles:true}));
-                            clearInterval(fill); break;
-                        }
+        navigator.geolocation.getCurrentPosition(function(p){
+            var lat=p.coords.latitude.toFixed(6), lon=p.coords.longitude.toFixed(6);
+            var v=lat+', '+lon;
+            s.style.background='#dcfce7'; s.style.color='#166534';
+            s.innerText='✅ GPS detected: '+v+'\nNow click USE LOCATION & AUTO-SEARCH below ↓';
+            b.innerText='✅ GPS Ready — Click the button below!';
+            b.style.background='#059669';
+            var n=0, t=setInterval(function(){
+                n++;
+                var ins=window.parent.document.querySelectorAll('input[type=text]');
+                for(var i=0;i<ins.length;i++){
+                    var ph=(ins[i].getAttribute('placeholder')||'').toLowerCase();
+                    if(ph.includes('gps')||ph.includes('city')||ph.includes('enter')){
+                        ins[i].value=v;
+                        ins[i].dispatchEvent(new Event('input',{bubbles:true}));
+                        ins[i].dispatchEvent(new Event('change',{bubbles:true}));
+                        clearInterval(t); break;
                     }
-                    if (tries > 20) clearInterval(fill);
-                }, 400);
-            },
-            function(err) {
-                stat.style.background = '#fee2e2'; stat.style.color = '#991b1b';
-                stat.innerText = err.code===1
-                    ? '❌ Permission denied. Please type your city name in the box below.'
-                    : '❌ GPS failed. Please type your city or area below.';
-                btn.innerText = '📍 Try GPS Again'; btn.disabled = false; btn.style.background = '#4f46e5';
-            },
-            {enableHighAccuracy:true, timeout:12000, maximumAge:0}
-        );
+                }
+                if(n>20) clearInterval(t);
+            },400);
+        },function(e){
+            s.style.background='#fee2e2'; s.style.color='#991b1b';
+            s.innerText=e.code===1?'❌ Permission denied. Type city below.':'❌ GPS error. Type city below.';
+            b.innerText='📍 Try Again'; b.disabled=false; b.style.background='#4f46e5';
+        },{enableHighAccuracy:true,timeout:12000,maximumAge:0});
     }
     </script>
-    """, height=115)
-
-    st.markdown("<div style='height:8px'></div>", unsafe_allow_html=True)
+    """, height=120)
 
     coord_input = st.text_input("",
-        placeholder="GPS fills here automatically — or type your city: Vijayawada",
+        placeholder="GPS fills here — or type city: Vijayawada",
         label_visibility="collapsed", key="coord_box")
 
-    ca, cb, cc = st.columns([3, 2, 2])
-    with ca:
-        radius = st.slider("Search radius (km)", 2, 25, 10)
-    with cb:
-        if st.button("✅ Use Location", use_container_width=True):
+    c1, c2 = st.columns([1, 1])
+    with c1:
+        if st.button("✅ Use Location & Auto-Search"):
             val = coord_input.strip()
             if not val:
                 st.warning("Detect GPS or type a city first")
-            elif "," in val:
-                try:
-                    p = val.split(",")
-                    lat, lon = float(p[0].strip()), float(p[1].strip())
-                    if 6.5 <= lat <= 37.5 and 68.0 <= lon <= 97.5:
-                        st.session_state.user_location = (lat, lon, f"{lat:.5f}, {lon:.5f}")
-                        st.success("✅ Location set!")
+            else:
+                # Parse coordinates or geocode city
+                if "," in val:
+                    try:
+                        p = val.split(",")
+                        lat, lon = float(p[0].strip()), float(p[1].strip())
+                        if 6.5 <= lat <= 37.5 and 68.0 <= lon <= 97.5:
+                            st.session_state.user_location = (lat, lon, f"{lat:.5f}, {lon:.5f}")
+                        else:
+                            st.error("Outside India bounds"); st.stop()
+                    except:
+                        st.error("Invalid format"); st.stop()
+                else:
+                    geo = Nominatim(user_agent="roadsos_v7")
+                    loc = geo.geocode(val + ", India", country_codes="IN")
+                    if loc and 6.5 <= loc.latitude <= 37.5:
+                        st.session_state.user_location = (loc.latitude, loc.longitude, val)
                     else:
-                        st.error("Outside India")
-                except:
-                    st.error("Invalid format")
-            else:
-                geo = Nominatim(user_agent="roadsos_v5")
-                loc = geo.geocode(val + ", India", country_codes="IN")
-                if loc and 6.5 <= loc.latitude <= 37.5:
-                    st.session_state.user_location = (loc.latitude, loc.longitude, val)
-                    st.success(f"✅ Found!")
-                else:
-                    st.error("Not found in India")
-    with cc:
-        if st.button("🚨 Find Services", use_container_width=True):
-            if st.session_state.user_location:
-                lat, lon, _ = st.session_state.user_location
-                with st.spinner("Scanning..."):
-                    st.session_state.services = find_nearby_services(lat, lon, radius)
-                found = sum(len(v) for v in st.session_state.services.values())
-                if found > 0:
-                    st.success(f"✅ {found} services found!")
-                else:
-                    st.warning("None found. Try 20 km.")
-            else:
-                st.warning("Set location first!")
+                        st.error("Location not found in India"); st.stop()
 
+                # Auto search
+                lat, lon, addr = st.session_state.user_location
+                services, radius_used = auto_search(lat, lon)
+                st.session_state.services = services
+                st.rerun()
+
+    with c2:
+        if st.button("🗑️ Clear & Reset"):
+            st.session_state.user_location = None
+            st.session_state.services = None
+            st.session_state.search_radius_used = None
+            st.rerun()
+
+    # Status display
     if st.session_state.user_location:
+        radius_info = ""
+        if st.session_state.search_radius_used:
+            r = st.session_state.search_radius_used
+            r_label = f"{int(r*1000)} m" if r < 1 else f"{r:.1f} km"
+            total = sum(len(v) for v in st.session_state.services.values()) if st.session_state.services else 0
+            radius_info = f" &nbsp;·&nbsp; 🔍 Found {total} services within {r_label}"
         st.markdown(f"""
         <div style="background:#ede9fe;border:1px solid #c7d2fe;border-radius:10px;
              padding:0.5rem 1rem;font-size:0.85rem;color:#4338ca;margin-top:0.5rem;">
-            📍 Active location: <b>{st.session_state.user_location[2]}</b>
+            ✅ <b>{st.session_state.user_location[2]}</b>{radius_info}
         </div>
         """, unsafe_allow_html=True)
 
-    st.markdown('</div>', unsafe_allow_html=True)
-
-with dial_col:
+with col_dial:
     st.markdown("""
-    <div class="quick-dial">
-        <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:1.3px;color:#818cf8;margin-bottom:0.8rem;">☎️ Quick Dial</div>
-        <div class="qdrow"><span style="color:#e0e7ff">🚑 Ambulance</span><span class="qdnum">108</span></div>
-        <div class="qdrow"><span style="color:#e0e7ff">🚔 Police</span><span class="qdnum">100</span></div>
-        <div class="qdrow"><span style="color:#e0e7ff">🔥 Fire</span><span class="qdnum">101</span></div>
-        <div class="qdrow"><span style="color:#e0e7ff">🛣️ Highway</span><span class="qdnum">1033</span></div>
-        <div class="qdrow" style="border-bottom:none"><span style="color:#e0e7ff">🆘 SOS</span><span class="qdnum">112</span></div>
+    <div style="background:#1e1b4b;border-radius:14px;padding:1.2rem 1rem;">
+        <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:1.3px;color:#818cf8;margin-bottom:0.8rem;">☎️ Quick Dial</div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #312e81;">
+            <span style="color:#e0e7ff;font-size:0.9rem;">🚑 Ambulance</span><span style="color:#818cf8;font-weight:700;font-size:1rem;">108</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #312e81;">
+            <span style="color:#e0e7ff;font-size:0.9rem;">🚔 Police</span><span style="color:#818cf8;font-weight:700;font-size:1rem;">100</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #312e81;">
+            <span style="color:#e0e7ff;font-size:0.9rem;">🔥 Fire</span><span style="color:#818cf8;font-weight:700;font-size:1rem;">101</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #312e81;">
+            <span style="color:#e0e7ff;font-size:0.9rem;">🛣️ Highway</span><span style="color:#818cf8;font-weight:700;font-size:1rem;">1033</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;">
+            <span style="color:#e0e7ff;font-size:0.9rem;">🆘 SOS</span><span style="color:#818cf8;font-weight:700;font-size:1rem;">112</span>
+        </div>
     </div>
     """, unsafe_allow_html=True)
 
-# ══════════════════════════════════════
-# NEAREST HOSPITAL CALL CARD
-# ══════════════════════════════════════
+st.markdown('</div>', unsafe_allow_html=True)
+
+# ── NEAREST HOSPITAL CALL CARD ──
 if st.session_state.services:
     nearest = get_nearest_hospital(st.session_state.services)
     if nearest:
@@ -291,7 +302,7 @@ if st.session_state.services:
         st.markdown(f"""
         <div class="sos-card">
             <div>
-                <div class="sos-title">🏥 Nearest Hospital — One Tap to Call</div>
+                <div class="sos-title">🏥 Nearest Hospital — Tap to Call Instantly</div>
                 <div class="sos-name">{nearest['name']}</div>
                 <div class="sos-dist">📏 {nearest['distance_km']} km away &nbsp;·&nbsp; {phone_txt}</div>
             </div>
@@ -299,9 +310,7 @@ if st.session_state.services:
         </div>
         """, unsafe_allow_html=True)
 
-# ══════════════════════════════════════
-# EMERGENCY NUMBERS
-# ══════════════════════════════════════
+# ── EMERGENCY NUMBERS ──
 st.markdown("""
 <div class="num-row">
     <div class="num-card"><div class="ni">🆘</div><div class="nn">112</div><div class="nl">National SOS</div></div>
@@ -311,9 +320,7 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# ══════════════════════════════════════
-# TABS
-# ══════════════════════════════════════
+# ── TABS ──
 tab1, tab2, tab3 = st.tabs(["🗺️  Map & Services", "🤖  AI First-Aid Guide", "💬  AI Chat"])
 
 with tab1:
@@ -324,18 +331,23 @@ with tab1:
             st.markdown("""
             <div class="empty">
                 <div style="font-size:2.5rem">🔍</div>
-                <div style="font-weight:600;color:#1e1b4b;margin:0.8rem 0 0.3rem">No services found</div>
-                <div style="color:#94a3b8;font-size:0.88rem">Increase radius to 15–20 km and click Find Services again</div>
+                <div style="font-weight:600;color:#1e1b4b;margin:0.8rem 0 0.3rem;">No services found within 20 km</div>
+                <div style="color:#94a3b8;font-size:0.88rem;">Please call 112 directly for emergency help</div>
             </div>
             """, unsafe_allow_html=True)
         else:
+            # Show radius badge
+            r = st.session_state.search_radius_used or 0
+            r_label = f"{int(r*1000)} m" if r < 1 else f"{r:.1f} km"
+            st.markdown(f'<div class="radius-badge">🔍 Showing services within <b>&nbsp;{r_label}&nbsp;</b> of your location</div>', unsafe_allow_html=True)
+
             col1, col2 = st.columns([3, 2])
             with col1:
-                st.markdown('<div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:1.3px;color:#4f46e5;margin-bottom:0.6rem;">Live Emergency Map</div>', unsafe_allow_html=True)
+                st.markdown('<span class="clabel">Live Emergency Map</span>', unsafe_allow_html=True)
                 m = create_emergency_map(lat, lon, st.session_state.services)
                 st_folium(m, width=None, height=450)
             with col2:
-                st.markdown('<div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:1.3px;color:#4f46e5;margin-bottom:0.6rem;">Nearest Services</div>', unsafe_allow_html=True)
+                st.markdown('<span class="clabel">Nearest Services</span>', unsafe_allow_html=True)
                 icons = {"hospitals":"🏥","police":"🚔","ambulance":"🚑"}
                 colors = {"hospitals":"#dc2626","police":"#2563eb","ambulance":"#d97706"}
                 for stype, places in st.session_state.services.items():
@@ -347,7 +359,7 @@ with tab1:
                             st.markdown(f"""
                             <div class="svc" style="border-left-color:{c}">
                                 <div class="sname">{icons.get(stype,'')} {p['name']}</div>
-                                <div class="sphone">{"📞 "+ph if ph else "Phone not listed"}</div>
+                                <div class="sph">{"📞 "+ph if ph else "Phone not listed"}</div>
                                 <span class="svc-dist">📏 {p['distance_km']} km</span>{call_html}
                             </div>
                             """, unsafe_allow_html=True)
@@ -355,11 +367,11 @@ with tab1:
         st.markdown("""
         <div class="empty">
             <div style="font-size:3rem">🗺️</div>
-            <div style="font-weight:600;font-size:1rem;color:#1e1b4b;margin:1rem 0 0.4rem">
-                Detect your location first
+            <div style="font-weight:600;font-size:1rem;color:#1e1b4b;margin:1rem 0 0.4rem;">
+                Detect GPS → Click Use Location & Auto-Search
             </div>
-            <div style="color:#94a3b8;font-size:0.88rem">
-                Click GPS → Use Location → Find Services above
+            <div style="color:#94a3b8;font-size:0.88rem;">
+                The app will automatically find the nearest services starting from 500 m
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -367,7 +379,7 @@ with tab1:
 with tab2:
     col1, col2 = st.columns([3, 2])
     with col1:
-        st.markdown('<div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:1.3px;color:#4f46e5;margin-bottom:0.6rem;">Describe the Accident</div>', unsafe_allow_html=True)
+        st.markdown('<span class="clabel">Describe the Accident</span>', unsafe_allow_html=True)
         situation = st.text_area("",
             placeholder="e.g. Two vehicles collided on NH65 near Vijayawada. One person unconscious, another has bleeding arm...",
             height=160, label_visibility="collapsed")
@@ -376,12 +388,12 @@ with tab2:
                 loc_info = st.session_state.user_location[2] if st.session_state.user_location else "India"
                 with st.spinner("AI analyzing situation..."):
                     guidance = get_ai_guidance(situation, loc_info)
-                st.markdown('<div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:1.3px;color:#4f46e5;margin:1.2rem 0 0.5rem;">AI Emergency Guidance</div>', unsafe_allow_html=True)
+                st.markdown('<span class="clabel" style="margin-top:1rem;">AI Guidance</span>', unsafe_allow_html=True)
                 st.markdown(f'<div class="guidance">{guidance}</div>', unsafe_allow_html=True)
             else:
                 st.warning("Please describe the accident situation first.")
     with col2:
-        st.markdown('<div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:1.3px;color:#4f46e5;margin-bottom:0.6rem;">Quick Reference</div>', unsafe_allow_html=True)
+        st.markdown('<span class="clabel">Quick Reference</span>', unsafe_allow_html=True)
         st.markdown("""
         <div class="ref">
             <div style="color:#4f46e5;font-weight:700;margin-bottom:8px;">✅ DO IMMEDIATELY</div>
@@ -400,7 +412,7 @@ with tab2:
         """, unsafe_allow_html=True)
 
 with tab3:
-    st.markdown('<div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:1.3px;color:#4f46e5;margin-bottom:0.6rem;">Chat with RoadSoS AI</div>', unsafe_allow_html=True)
+    st.markdown('<span class="clabel">Chat with RoadSoS AI</span>', unsafe_allow_html=True)
     st.markdown("""
     <div class="tip">
         💡 Ask anything — "What do I do if someone is unconscious?",
