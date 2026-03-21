@@ -4,8 +4,19 @@ from emergency_finder import find_nearby_services, get_nearest_hospital
 from ai_assistant import get_ai_guidance, chat_with_ai
 from map_module import create_emergency_map
 from geopy.geocoders import Nominatim
+import base64
+import os
 
 st.set_page_config(page_title="RoadSoS", page_icon="🚨", layout="wide")
+
+def get_logo_b64():
+    try:
+        with open("logo.png", "rb") as f:
+            return base64.b64encode(f.read()).decode()
+    except:
+        return None
+
+logo_b64 = get_logo_b64()
 
 st.markdown("""
 <style>
@@ -16,8 +27,9 @@ st.markdown("""
 section[data-testid="stSidebar"] { display: none !important; }
 .stApp { background: #0f0e1a; }
 .block-container { padding: 1.5rem 2rem !important; max-width: 1400px !important; }
-.hero { background: linear-gradient(135deg,#4f46e5 0%,#7c3aed 60%,#9333ea 100%); border-radius:24px; padding:2.2rem 3rem; margin-bottom:1.5rem; position:relative; overflow:hidden; }
-.hero::after { content:'🚨'; position:absolute; right:2.5rem; top:50%; transform:translateY(-50%); font-size:7rem; opacity:0.08; }
+.hero { background: linear-gradient(135deg,#4f46e5 0%,#7c3aed 60%,#9333ea 100%); border-radius:24px; padding:2.2rem 3rem; margin-bottom:1.5rem; position:relative; overflow:hidden; display:flex; align-items:center; gap:2rem; }
+.hero-text { flex:1; }
+.hero-logo { width:100px; height:100px; object-fit:contain; filter:drop-shadow(0 0 20px rgba(255,255,255,0.3)); flex-shrink:0; }
 .hero-badge { display:inline-block; background:rgba(255,255,255,0.15); color:white !important; border-radius:20px; padding:4px 16px; font-size:0.78rem; font-weight:600; margin-bottom:0.8rem; }
 .hero h1 { font-size:2.1rem; font-weight:800; color:white !important; margin:0 0 0.4rem; }
 .hero p { color:rgba(255,255,255,0.8) !important; margin:0; font-size:0.95rem; }
@@ -46,7 +58,7 @@ section[data-testid="stSidebar"] { display: none !important; }
 .svc-dist { display:inline-block; background:#13112b; color:#818cf8; font-size:0.72rem; font-weight:600; padding:2px 10px; border-radius:20px; margin-top:5px; border:1px solid #2a2660; }
 .call-svc { display:inline-block; background:#052e16; color:#34d399 !important; font-size:0.75rem; font-weight:700; padding:2px 12px; border-radius:20px; margin-top:5px; margin-left:6px; text-decoration:none !important; border:1px solid #166534; }
 .guidance { background:#1e1a3f; border-radius:16px; padding:1.8rem; border:1px solid #2a2660; border-top:4px solid #4f46e5; line-height:1.85; color:#e0e7ff; font-size:0.93rem; }
-.ref { background:#1e1a3f; border-radius:14px; padding:1.3rem; border:1px solid #2a2660; line-height:1.9; color:#e0e7ff; font-size:0.87rem; }
+.ref { background:#1e1a3f; border-radius:14px; padding:1.3rem; border:1px solid #2a2260; line-height:1.9; color:#e0e7ff; font-size:0.87rem; }
 .tip { background:#1e1a3f; border-radius:10px; padding:0.65rem 1rem; font-size:0.85rem; color:#a5b4fc; margin-bottom:1rem; border:1px solid #2a2660; }
 .empty { text-align:center; padding:3rem 2rem; background:#13112b; border-radius:18px; border:1px solid #2a2260; }
 .radius-badge { display:inline-flex; align-items:center; gap:6px; background:#1e1a3f; color:#818cf8; border:1px solid #2a2660; border-radius:20px; padding:4px 14px; font-size:0.82rem; font-weight:600; margin-bottom:0.8rem; }
@@ -55,8 +67,8 @@ section[data-testid="stSidebar"] { display: none !important; }
 .stButton > button:hover { opacity:0.88 !important; transform:translateY(-1px) !important; }
 .stTextInput > div > div > input { border-radius:12px !important; border:1.5px solid #2a2660 !important; color:#e0e7ff !important; font-size:0.93rem !important; padding:0.65rem 1rem !important; background:#1e1a3f !important; }
 .stTextInput > div > div > input::placeholder { color:#6366f1 !important; }
-.stTextInput > div > div > input:focus { border-color:#4f46e5 !important; }
 .stTextArea > div > div > textarea { border-radius:12px !important; border:1.5px solid #2a2660 !important; color:#e0e7ff !important; font-size:0.93rem !important; background:#1e1a3f !important; }
+.stSlider > div > div > div > div { background:#4f46e5 !important; }
 div[data-testid="stChatMessage"] { background:#13112b !important; border-radius:14px !important; border:1px solid #2a2660 !important; margin:0.4rem 0 !important; }
 </style>
 """, unsafe_allow_html=True)
@@ -83,16 +95,16 @@ if "lat" in params and "lon" in params:
     except:
         pass
 
-def auto_search(lat, lon):
+def auto_search(lat, lon, max_radius=20.0):
     radius = 0.5
     ph = st.empty()
-    while radius <= 20.0:
+    while radius <= max_radius:
         r_label = f"{int(radius*1000)} m" if radius < 1 else f"{radius:.1f} km"
         ph.markdown(f"""
         <div style="background:#1e1a3f;border:1px solid #2a2660;border-radius:14px;padding:1rem 1.5rem;margin-bottom:1rem;">
             <div style="font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:1.4px;color:#6366f1;margin-bottom:0.5rem;">🔍 Auto-scanning</div>
             <div style="font-size:0.9rem;color:#fbbf24;font-weight:600;">⏳ Searching within <b>{r_label}</b>...</div>
-            <div style="font-size:0.75rem;color:#4f46e5;margin-top:4px;">Expands automatically up to 20 km</div>
+            <div style="font-size:0.75rem;color:#4f46e5;margin-top:4px;">Expands automatically up to {max_radius} km</div>
         </div>
         """, unsafe_allow_html=True)
         services = find_nearby_services(lat, lon, radius)
@@ -107,13 +119,13 @@ def auto_search(lat, lon):
             st.session_state.search_radius_used = radius
             return services, radius
         radius = round(radius + 0.5, 1)
-    ph.markdown("""
+    ph.markdown(f"""
     <div style="background:#450a0a;border:1px solid #991b1b;border-radius:14px;padding:1rem 1.5rem;margin-bottom:1rem;">
-        <div style="font-size:0.9rem;color:#f87171;font-weight:600;">⚠️ No services found within 20 km. Please call 112.</div>
+        <div style="font-size:0.9rem;color:#f87171;font-weight:600;">⚠️ No services found within {max_radius} km. Please call 112.</div>
     </div>
     """, unsafe_allow_html=True)
-    st.session_state.search_radius_used = 20.0
-    return {}, 20.0
+    st.session_state.search_radius_used = max_radius
+    return {}, max_radius
 
 # ── Auto-search after GPS redirect ──
 if st.session_state.gps_auto and st.session_state.user_location and not st.session_state.services:
@@ -124,11 +136,15 @@ if st.session_state.gps_auto and st.session_state.user_location and not st.sessi
     st.rerun()
 
 # ── HERO ──
-st.markdown("""
+logo_html = f'<img src="data:image/png;base64,{logo_b64}" class="hero-logo"/>' if logo_b64 else '<div style="font-size:4rem">🚨</div>'
+st.markdown(f"""
 <div class="hero">
-    <div class="hero-badge">🇮🇳 India Road Safety · AI Powered</div>
-    <h1>Road Accident Emergency Assistant</h1>
-    <p>Instantly locate hospitals · Get AI first-aid guidance · One-tap emergency calling</p>
+    {logo_html}
+    <div class="hero-text">
+        <div class="hero-badge">🇮🇳 India Road Safety · AI Powered</div>
+        <h1>RoadSoS — Emergency Assistant</h1>
+        <p>Instantly locate hospitals · Get AI first-aid guidance · One-tap emergency calling</p>
+    </div>
 </div>
 """, unsafe_allow_html=True)
 
@@ -160,13 +176,21 @@ with left:
     </a>
     <div style="background:#1e1a3f;border:1px solid #2a2660;border-radius:10px;
          padding:10px 14px;font-size:12px;color:#6366f1;margin-bottom:12px;line-height:1.6;">
-        ℹ️ Opens GPS page → detects your exact location → automatically returns here with your coordinates
+        ℹ️ Opens GPS page → detects your exact location → automatically returns here
     </div>
     """, unsafe_allow_html=True)
 
     coord_input = st.text_input("",
-        placeholder="GPS auto-fills here after detection — or type city: Vijayawada",
+        placeholder="GPS auto-fills here — or type city: Vijayawada",
         label_visibility="collapsed", key="coord_box")
+
+    # Search radius slider
+    st.markdown('<span style="font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:1.4px;color:#6366f1;margin-bottom:0.3rem;display:block;">🔍 Max Search Radius</span>', unsafe_allow_html=True)
+    max_radius = st.slider("", 5, 50, 20,
+        format="%d km",
+        label_visibility="collapsed",
+        key="radius_slider")
+    st.caption(f"Will auto-search from 500 m up to **{max_radius} km**")
 
     col1, col2 = st.columns(2)
     with col1:
@@ -180,7 +204,7 @@ with left:
                     lat, lon = float(p[0].strip()), float(p[1].strip())
                     if 6.5 <= lat <= 37.5 and 68.0 <= lon <= 97.5:
                         st.session_state.user_location = (lat, lon, f"{lat:.5f}, {lon:.5f}")
-                        services, radius = auto_search(lat, lon)
+                        services, radius = auto_search(lat, lon, max_radius)
                         st.session_state.services = services
                         st.rerun()
                     else:
@@ -193,7 +217,7 @@ with left:
                     loc = geo.geocode(val + ", India", country_codes="IN")
                 if loc and 6.5 <= loc.latitude <= 37.5:
                     st.session_state.user_location = (loc.latitude, loc.longitude, val)
-                    services, radius = auto_search(loc.latitude, loc.longitude)
+                    services, radius = auto_search(loc.latitude, loc.longitude, max_radius)
                     st.session_state.services = services
                     st.rerun()
                 else:
@@ -264,8 +288,8 @@ with tab1:
             st.markdown("""
             <div class="empty">
                 <div style="font-size:2.5rem">🔍</div>
-                <div style="font-weight:600;color:#e0e7ff;margin:0.8rem 0 0.3rem;">No services found within 20 km</div>
-                <div style="color:#6366f1;font-size:0.88rem;">Please call 112 directly</div>
+                <div style="font-weight:600;color:#e0e7ff;margin:0.8rem 0 0.3rem;">No services found</div>
+                <div style="color:#6366f1;font-size:0.88rem;">Increase max radius and search again</div>
             </div>
             """, unsafe_allow_html=True)
         else:
@@ -299,7 +323,7 @@ with tab1:
         <div class="empty">
             <div style="font-size:3rem">🗺️</div>
             <div style="font-weight:600;font-size:1rem;color:#e0e7ff;margin:1rem 0 0.4rem;">
-                Click GPS button → Allow location → Click Open RoadSoS
+                Click GPS → Allow → Open RoadSoS → Map loads here
             </div>
             <div style="color:#6366f1;font-size:0.88rem;">
                 Searches from 500 m and expands until services found
@@ -317,7 +341,7 @@ with tab2:
         if st.button("⚡  Get AI Emergency Guidance"):
             if situation.strip():
                 loc_info = st.session_state.user_location[2] if st.session_state.user_location else "India"
-                with st.spinner("AI analyzing..."):
+                with st.spinner("AI analyzing situation..."):
                     guidance = get_ai_guidance(situation, loc_info)
                 st.markdown('<span class="sec-label" style="margin-top:1rem;">AI Guidance</span>', unsafe_allow_html=True)
                 st.markdown(f'<div class="guidance">{guidance}</div>', unsafe_allow_html=True)
@@ -356,7 +380,7 @@ with tab3:
     if prompt := st.chat_input("Ask your emergency question..."):
         st.session_state.chat_history.append({"role":"user","content":prompt})
         loc_info = st.session_state.user_location[2] if st.session_state.user_location else "India"
-        with st.spinner(""):
+        with st.spinner("Thinking..."):
             reply = chat_with_ai(st.session_state.chat_history[:-1], prompt, loc_info)
         st.session_state.chat_history.append({"role":"assistant","content":reply})
         st.rerun()
