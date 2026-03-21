@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+* { box-sizing:border-box; margin:0; padding:0; font-family:Inter,sans-serif; }
+body { background:#0f0e1a; display:flex; align-items:center; justify-content:center; min-height:100vh; padding:1rem; }
+.card { background:#13112b; border:1px solid #2a2660; border-radius:20px; padding:2rem; max-width:400px; width:100%; text-align:center; }
+h2 { color:white; font-size:1.3rem; margin-bottom:0.5rem; }
+p { color:#6366f1; font-size:0.88rem; margin-bottom:1.5rem; }
+#btn { width:100%; padding:14px; font-size:15px; font-weight:700; background:linear-gradient(135deg,#4f46e5,#7c3aed); color:white; border:none; border-radius:14px; cursor:pointer; margin-bottom:1rem; }
+#btn:hover { opacity:0.88; }
+#status { padding:12px 16px; border-radius:12px; font-size:13px; line-height:1.6; display:none; white-space:pre-line; background:#1e1a3f; color:#fbbf24; border:1px solid #2a2660; margin-bottom:1rem; }
+#go { width:100%; padding:14px; font-size:15px; font-weight:700; background:#059669; color:white; border:none; border-radius:14px; cursor:pointer; display:none; }
+</style>
+</head>
+<body>
+<div class="card">
+    <h2>🚨 RoadSoS GPS</h2>
+    <p>Detect your exact location to find emergency services</p>
+    <button id="btn" onclick="detect()">📍 Detect My GPS Location</button>
+    <div id="status"></div>
+    <button id="go" onclick="sendToApp()">🚀 Open App With My Location</button>
+</div>
+<script>
+var APP_URL = "https://roadsos-mk2q3nejzmid5kedlrd6nl.streamlit.app";
+var lat = "", lon = "";
+
+function detect() {
+    var btn = document.getElementById("btn");
+    var s   = document.getElementById("status");
+    s.style.display = "block";
+    btn.disabled    = true;
+    btn.innerText   = "⏳ Detecting...";
+    s.style.color   = "#fbbf24";
+    s.innerText     = "Requesting GPS permission...\nIf browser asks, tap Allow.";
+
+    navigator.geolocation.getCurrentPosition(
+        function(pos) {
+            lat = pos.coords.latitude.toFixed(6);
+            lon = pos.coords.longitude.toFixed(6);
+            var acc = Math.round(pos.coords.accuracy);
+            s.style.background  = "#052e16";
+            s.style.color       = "#34d399";
+            s.style.borderColor = "#166534";
+            s.innerText = "✅ Location detected!\n" + lat + ", " + lon + "\nAccuracy: ±" + acc + " metres";
+            btn.innerText = "✅ GPS Ready!";
+            btn.style.background = "#374151";
+            document.getElementById("go").style.display = "block";
+        },
+        function(err) {
+            s.style.background  = "#450a0a";
+            s.style.color       = "#f87171";
+            s.style.borderColor = "#991b1b";
+            btn.disabled  = false;
+            btn.innerText = "📍 Try Again";
+            if (err.code === 1)
+                s.innerText = "❌ Permission denied.\n\nFix:\n1. Click 🔒 in address bar\n2. Location → Allow\n3. Try again";
+            else
+                s.innerText = "❌ GPS failed. Check your connection.";
+        },
+        { enableHighAccuracy:true, timeout:15000, maximumAge:0 }
+    );
+}
+
+function sendToApp() {
+    window.location.href = APP_URL + "?lat=" + lat + "&lon=" + lon;
+}
+</script>
+</body>
+</html>
