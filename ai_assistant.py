@@ -12,9 +12,9 @@ def get_ai_guidance(situation, location_info):
     try:
         key = get_key()
         if not key:
-            raise ValueError("No API key")
+            raise ValueError("No API key found")
         genai.configure(api_key=key)
-        model = genai.GenerativeModel("gemini-1.5-flash")
+        model = genai.GenerativeModel("gemini-2.0-flash")
         prompt = f"""You are RoadSoS, an emergency AI assistant for road accident victims in India.
 The user is at or near: {location_info}
 
@@ -39,9 +39,9 @@ def chat_with_ai(history, new_message, location_info):
     try:
         key = get_key()
         if not key:
-            raise ValueError("No API key")
+            raise ValueError("No API key found")
         genai.configure(api_key=key)
-        model = genai.GenerativeModel("gemini-1.5-flash")
+        model = genai.GenerativeModel("gemini-2.0-flash")
         system = f"""You are RoadSoS, a calm and knowledgeable emergency assistant for road accidents in India.
 Location context: {location_info}
 Give accurate, specific, actionable advice for each question.
