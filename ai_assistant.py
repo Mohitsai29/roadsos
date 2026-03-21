@@ -8,6 +8,34 @@ def get_key():
         import os
         return os.getenv("GEMINI_API_KEY", "")
 
+def list_available_models():
+    try:
+        key = get_key()
+        genai.configure(api_key=key)
+        models = genai.list_models()
+        return [m.name for m in models if "generateContent" in m.supported_generation_methods]
+    except:
+        return []
+
+def get_best_model():
+    models = list_available_models()
+    # Priority order
+    preferred = [
+        "models/gemini-1.5-pro",
+        "models/gemini-1.5-flash",
+        "models/gemini-1.0-pro",
+        "models/gemini-pro",
+        "models/gemini-2.0-flash",
+        "models/gemini-2.0-flash-lite",
+    ]
+    for p in preferred:
+        if p in models:
+            return p.replace("models/", "")
+    # Return first available
+    if models:
+        return models[0].replace("models/", "")
+    return None
+
 def get_ai_guidance(situation, location_info):
     try:
         key = get_key()
@@ -15,19 +43,12 @@ def get_ai_guidance(situation, location_info):
             raise ValueError("No API key found")
         genai.configure(api_key=key)
 
-        # Try models in order until one works
-        models_to_try = [
-            "gemini-pro",
-            "gemini-1.0-pro",
-            "gemini-1.5-pro-latest",
-            "gemini-1.5-flash",
-        ]
+        model_name = get_best_model()
+        if not model_name:
+            raise ValueError("No compatible model found")
 
-        last_error = None
-        for model_name in models_to_try:
-            try:
-                model = genai.GenerativeModel(model_name)
-                prompt = f"""You are RoadSoS, an emergency AI assistant for road accident victims in India.
+        model = genai.GenerativeModel(model_name)
+        prompt = f"""You are RoadSoS, an emergency AI assistant for road accident victims in India.
 The user is at or near: {location_info}
 
 Give specific, accurate emergency guidance for this exact situation.
@@ -37,21 +58,16 @@ Format your response clearly with:
 3. WHAT NOT TO DO (specific to this situation)
 4. WHILE WAITING FOR HELP
 
-Be specific to the situation described. Do NOT give generic advice.
+Be specific. Do NOT give generic advice.
 Keep it clear, calm and actionable.
 End with: "Help is being located. Stay calm."
 
 Situation: {situation}"""
-                response = model.generate_content(prompt)
-                return response.text
-            except Exception as e:
-                last_error = e
-                continue
-
-        return f"AI unavailable. Please call 112 immediately.\n\nError: {str(last_error)}"
+        response = model.generate_content(prompt)
+        return response.text
 
     except Exception as e:
-        return f"AI guidance unavailable. Please call 112 immediately.\n\nError: {str(e)}"
+        return f"AI unavailable (Error: {str(e)})\n\nPlease call 112 immediately for emergency help."
 
 def chat_with_ai(history, new_message, location_info):
     try:
@@ -60,33 +76,20 @@ def chat_with_ai(history, new_message, location_info):
             raise ValueError("No API key found")
         genai.configure(api_key=key)
 
-        models_to_try = [
-            "gemini-pro",
-            "gemini-1.0-pro",
-            "gemini-1.5-pro-latest",
-            "gemini-1.5-flash",
-        ]
+        model_name = get_best_model()
+        if not model_name:
+            raise ValueError("No compatible model found")
 
-        last_error = None
-        for model_name in models_to_try:
-            try:
-                model = genai.GenerativeModel(model_name)
-                system = f"""You are RoadSoS, a calm and knowledgeable emergency assistant for road accidents in India.
-Location context: {location_info}
-Give accurate, specific, actionable advice for each question.
-Never give generic responses — always address the specific question asked."""
-                chat = model.start_chat(history=[
-                    {"role": msg["role"], "parts": [msg["content"]]}
-                    for msg in history
-                ])
-                response = chat.send_message(
-                    f"{system}\n\nUser question: {new_message}")
-                return response.text
-            except Exception as e:
-                last_error = e
-                continue
+        model = genai.GenerativeModel(model_name)
+        system = f"""You are RoadSoS, a calm emergency assistant for road accidents in India.
+Location: {location_info}. Give specific, actionable advice only."""
 
-        return f"AI unavailable. Please call 112.\n\nError: {str(last_error)}"
+        chat = model.start_chat(history=[
+            {"role": msg["role"], "parts": [msg["content"]]}
+            for msg in history
+        ])
+        response = chat.send_message(f"{system}\n\nUser: {new_message}")
+        return response.text
 
     except Exception as e:
-        return f"AI unavailable. Please call 112.\n\nError: {str(e)}"
+        return f"AI unavailable (Error: {str(e)})\n\nPlease call 112 for emergency help."
