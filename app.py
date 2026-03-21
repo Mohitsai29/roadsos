@@ -149,105 +149,23 @@ st.markdown('<span class="sec-label">📍 Step 1 — Detect Location & Auto-Sear
 left, right = st.columns([2, 1])
 
 with left:
-    st.components.v1.html("""
-<!DOCTYPE html>
-<html>
-<head>
-<style>
-* { box-sizing:border-box; margin:0; padding:0; font-family:Inter,sans-serif; }
-body { background:transparent; }
-#btn {
-    width:100%; padding:14px 20px; font-size:15px; font-weight:700;
-    background:linear-gradient(135deg,#4f46e5,#7c3aed);
-    color:white; border:none; border-radius:14px; cursor:pointer; margin-bottom:10px;
-}
-#btn:hover { opacity:0.88; }
-#st {
-    padding:12px 16px; border-radius:12px; font-size:13px; line-height:1.6;
-    white-space:pre-line; display:none;
-    background:#1e1a3f; color:#fbbf24; border:1px solid #2a2660;
-    margin-bottom:10px;
-}
-#confirm {
-    display:none; width:100%; padding:14px 20px; font-size:14px; font-weight:700;
-    background:#059669; color:white; border:none; border-radius:14px;
-    cursor:pointer; text-align:center; margin-top:8px;
-}
-#confirm:hover { opacity:0.88; }
-</style>
-</head>
-<body>
-<button id="btn" onclick="go()">📍 Detect My Exact GPS Location</button>
-<div id="st"></div>
-<button id="confirm" onclick="useLocation()"></button>
-<script>
-var detLat = '', detLon = '';
-
-function go() {
-    var b  = document.getElementById('btn');
-    var s  = document.getElementById('st');
-    var cf = document.getElementById('confirm');
-    cf.style.display = 'none';
-    s.style.display  = 'block';
-    b.disabled       = true;
-    b.innerText      = '⏳ Detecting...';
-    s.style.background  = '#1e1a3f';
-    s.style.color       = '#fbbf24';
-    s.style.borderColor = '#2a2660';
-    s.innerText = 'Requesting GPS permission...\nIf browser asks, tap Allow.';
-
-    if (!navigator.geolocation) {
-        s.style.background  = '#450a0a';
-        s.style.color       = '#f87171';
-        s.style.borderColor = '#991b1b';
-        s.innerText  = 'GPS not supported. Type your city below.';
-        b.disabled   = false;
-        b.innerText  = '📍 Detect GPS';
-        return;
-    }
-
-    navigator.geolocation.getCurrentPosition(
-        function(pos) {
-            detLat = pos.coords.latitude.toFixed(6);
-            detLon = pos.coords.longitude.toFixed(6);
-            var acc = Math.round(pos.coords.accuracy);
-            s.style.background  = '#052e16';
-            s.style.color       = '#34d399';
-            s.style.borderColor = '#166534';
-            s.innerText = '✅ ' + detLat + ', ' + detLon + ' (±' + acc + 'm)\nClick the green button below to load your location!';
-            b.innerText         = '✅ GPS Detected!';
-            b.style.background  = '#374151';
-            cf.style.display    = 'block';
-            cf.innerText        = '🚀 Use My Location & Find Services → ' + detLat + ', ' + detLon;
-        },
-        function(err) {
-            s.style.background  = '#450a0a';
-            s.style.color       = '#f87171';
-            s.style.borderColor = '#991b1b';
-            b.disabled  = false;
-            b.innerText = '📍 Try Again';
-            b.style.background = 'linear-gradient(135deg,#4f46e5,#7c3aed)';
-            if (err.code === 1)
-                s.innerText = '❌ Permission denied.\n\nFix:\n1. Click 🔒 in address bar\n2. Location → Allow\n3. Refresh & try again\n\nOR type your city below.';
-            else
-                s.innerText = '❌ GPS failed. Type your city below.';
-        },
-        { enableHighAccuracy:true, timeout:15000, maximumAge:0 }
-    );
-}
-
-function useLocation() {
-    if (!detLat || !detLon) return;
-    var url = window.top.location.href.split('?')[0] + '?lat=' + detLat + '&lon=' + detLon;
-    window.top.location.replace(url);
-}
-</script>
-</body>
-</html>
-""", height=210)
+    GPS_URL = "https://mohitsai29.github.io/roadsos/gps.html"
+    st.markdown(f"""
+    <a href="{GPS_URL}" target="_blank" style="
+        display:block; width:100%; padding:16px 20px; font-size:16px; font-weight:700;
+        background:linear-gradient(135deg,#4f46e5,#7c3aed); color:white;
+        border-radius:14px; cursor:pointer; text-align:center;
+        text-decoration:none; margin-bottom:10px;">
+        📍 Detect My Exact GPS Location
+    </a>
+    <div style="background:#1e1a3f;border:1px solid #2a2660;border-radius:10px;
+         padding:10px 14px;font-size:12px;color:#6366f1;margin-bottom:12px;line-height:1.6;">
+        ℹ️ Opens GPS page → detects your exact location → automatically returns here with your coordinates
+    </div>
+    """, unsafe_allow_html=True)
 
     coord_input = st.text_input("",
-        placeholder="GPS auto-fills here — or type city: Vijayawada",
+        placeholder="GPS auto-fills here after detection — or type city: Vijayawada",
         label_visibility="collapsed", key="coord_box")
 
     col1, col2 = st.columns(2)
@@ -381,7 +299,7 @@ with tab1:
         <div class="empty">
             <div style="font-size:3rem">🗺️</div>
             <div style="font-weight:600;font-size:1rem;color:#e0e7ff;margin:1rem 0 0.4rem;">
-                Click GPS → Allow → Click green button → Done!
+                Click GPS button → Allow location → Click Open RoadSoS
             </div>
             <div style="color:#6366f1;font-size:0.88rem;">
                 Searches from 500 m and expands until services found
