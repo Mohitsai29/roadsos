@@ -69,7 +69,7 @@ for key, default in [
     if key not in st.session_state:
         st.session_state[key] = default
 
-# ── Read GPS from URL query params (the reliable method) ──
+# ── Read GPS from URL query params ──
 params = st.query_params
 if "lat" in params and "lon" in params:
     try:
@@ -115,7 +115,7 @@ def auto_search(lat, lon):
     st.session_state.search_radius_used = 20.0
     return {}, 20.0
 
-# Auto-search right after GPS redirect
+# ── Auto-search after GPS redirect ──
 if st.session_state.gps_auto and st.session_state.user_location and not st.session_state.services:
     st.session_state.gps_auto = False
     lat_a, lon_a, _ = st.session_state.user_location
@@ -166,56 +166,85 @@ body { background:transparent; }
     padding:12px 16px; border-radius:12px; font-size:13px; line-height:1.6;
     white-space:pre-line; display:none;
     background:#1e1a3f; color:#fbbf24; border:1px solid #2a2660;
+    margin-bottom:10px;
 }
+#confirm {
+    display:none; width:100%; padding:14px 20px; font-size:14px; font-weight:700;
+    background:#059669; color:white; border:none; border-radius:14px;
+    cursor:pointer; text-align:center; margin-top:8px;
+}
+#confirm:hover { opacity:0.88; }
 </style>
 </head>
 <body>
 <button id="btn" onclick="go()">📍 Detect My Exact GPS Location</button>
 <div id="st"></div>
+<button id="confirm" onclick="useLocation()"></button>
 <script>
+var detLat = '', detLon = '';
+
 function go() {
-    var b = document.getElementById('btn');
-    var s = document.getElementById('st');
-    s.style.display = 'block';
-    b.disabled = true;
-    b.innerText = '⏳ Detecting...';
-    s.style.background='#1e1a3f'; s.style.color='#fbbf24'; s.style.borderColor='#2a2660';
-    s.innerText = 'Requesting GPS...\\nIf browser asks, tap Allow.';
+    var b  = document.getElementById('btn');
+    var s  = document.getElementById('st');
+    var cf = document.getElementById('confirm');
+    cf.style.display = 'none';
+    s.style.display  = 'block';
+    b.disabled       = true;
+    b.innerText      = '⏳ Detecting...';
+    s.style.background  = '#1e1a3f';
+    s.style.color       = '#fbbf24';
+    s.style.borderColor = '#2a2660';
+    s.innerText = 'Requesting GPS permission...\nIf browser asks, tap Allow.';
 
     if (!navigator.geolocation) {
-        s.style.background='#450a0a'; s.style.color='#f87171'; s.style.borderColor='#991b1b';
-        s.innerText = '❌ GPS not supported. Type your city below.';
-        b.disabled=false; b.innerText='📍 Detect GPS'; return;
+        s.style.background  = '#450a0a';
+        s.style.color       = '#f87171';
+        s.style.borderColor = '#991b1b';
+        s.innerText  = 'GPS not supported. Type your city below.';
+        b.disabled   = false;
+        b.innerText  = '📍 Detect GPS';
+        return;
     }
 
     navigator.geolocation.getCurrentPosition(
         function(pos) {
-            var lat = pos.coords.latitude.toFixed(6);
-            var lon = pos.coords.longitude.toFixed(6);
+            detLat = pos.coords.latitude.toFixed(6);
+            detLon = pos.coords.longitude.toFixed(6);
             var acc = Math.round(pos.coords.accuracy);
-            s.style.background='#052e16'; s.style.color='#34d399'; s.style.borderColor='#166534';
-            s.innerText = '✅ Detected: ' + lat + ', ' + lon + ' (±' + acc + 'm)\nLoading your location now...';
-            b.innerText = '✅ GPS Ready — Loading...';
-
-            // Pass coords via URL query params — most reliable method
-            var base = window.parent.location.origin + window.parent.location.pathname;
-            window.parent.location.href = base + '?lat=' + lat + '&lon=' + lon;
+            s.style.background  = '#052e16';
+            s.style.color       = '#34d399';
+            s.style.borderColor = '#166534';
+            s.innerText = '✅ ' + detLat + ', ' + detLon + ' (±' + acc + 'm)\nClick the green button below to load your location!';
+            b.innerText         = '✅ GPS Detected!';
+            b.style.background  = '#374151';
+            cf.style.display    = 'block';
+            cf.innerText        = '🚀 Use My Location & Find Services → ' + detLat + ', ' + detLon;
         },
         function(err) {
-            s.style.background='#450a0a'; s.style.color='#f87171'; s.style.borderColor='#991b1b';
-            b.disabled=false; b.innerText='📍 Try Again';
-            if (err.code===1)
-                s.innerText='❌ Permission denied.\\nFix: Click 🔒 in address bar → Location → Allow → Refresh\\nOr type your city below.';
+            s.style.background  = '#450a0a';
+            s.style.color       = '#f87171';
+            s.style.borderColor = '#991b1b';
+            b.disabled  = false;
+            b.innerText = '📍 Try Again';
+            b.style.background = 'linear-gradient(135deg,#4f46e5,#7c3aed)';
+            if (err.code === 1)
+                s.innerText = '❌ Permission denied.\n\nFix:\n1. Click 🔒 in address bar\n2. Location → Allow\n3. Refresh & try again\n\nOR type your city below.';
             else
-                s.innerText='❌ GPS failed. Type your city below.';
+                s.innerText = '❌ GPS failed. Type your city below.';
         },
         { enableHighAccuracy:true, timeout:15000, maximumAge:0 }
     );
 }
+
+function useLocation() {
+    if (!detLat || !detLon) return;
+    var url = window.top.location.href.split('?')[0] + '?lat=' + detLat + '&lon=' + detLon;
+    window.top.location.replace(url);
+}
 </script>
 </body>
 </html>
-""", height=150)
+""", height=210)
 
     coord_input = st.text_input("",
         placeholder="GPS auto-fills here — or type city: Vijayawada",
@@ -272,11 +301,16 @@ with right:
     st.markdown("""
     <div style="background:#1e1a3f;border-radius:16px;padding:1.2rem;border:1px solid #2a2660;">
         <div style="font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:1.4px;color:#6366f1;margin-bottom:0.8rem;">☎️ Tap to Call</div>
-        <a href="tel:108" style="display:flex;justify-content:space-between;align-items:center;background:#13112b;border:1px solid #2a2660;border-radius:10px;padding:10px 14px;margin:5px 0;text-decoration:none;"><span style="color:#e0e7ff;font-size:0.9rem;">🚑 Ambulance</span><b style="color:#818cf8;font-size:1.05rem;">108</b></a>
-        <a href="tel:100" style="display:flex;justify-content:space-between;align-items:center;background:#13112b;border:1px solid #2a2660;border-radius:10px;padding:10px 14px;margin:5px 0;text-decoration:none;"><span style="color:#e0e7ff;font-size:0.9rem;">🚔 Police</span><b style="color:#818cf8;font-size:1.05rem;">100</b></a>
-        <a href="tel:101" style="display:flex;justify-content:space-between;align-items:center;background:#13112b;border:1px solid #2a2660;border-radius:10px;padding:10px 14px;margin:5px 0;text-decoration:none;"><span style="color:#e0e7ff;font-size:0.9rem;">🔥 Fire</span><b style="color:#818cf8;font-size:1.05rem;">101</b></a>
-        <a href="tel:1033" style="display:flex;justify-content:space-between;align-items:center;background:#13112b;border:1px solid #2a2660;border-radius:10px;padding:10px 14px;margin:5px 0;text-decoration:none;"><span style="color:#e0e7ff;font-size:0.9rem;">🛣️ Highway</span><b style="color:#818cf8;font-size:1.05rem;">1033</b></a>
-        <a href="tel:112" style="display:flex;justify-content:space-between;align-items:center;background:#4f46e5;border:1px solid #6366f1;border-radius:10px;padding:10px 14px;margin:5px 0;text-decoration:none;"><span style="color:white;font-size:0.9rem;font-weight:700;">🆘 National SOS</span><b style="color:white;font-size:1.05rem;">112</b></a>
+        <a href="tel:108" style="display:flex;justify-content:space-between;align-items:center;background:#13112b;border:1px solid #2a2660;border-radius:10px;padding:10px 14px;margin:5px 0;text-decoration:none;">
+            <span style="color:#e0e7ff;font-size:0.9rem;">🚑 Ambulance</span><b style="color:#818cf8;font-size:1.05rem;">108</b></a>
+        <a href="tel:100" style="display:flex;justify-content:space-between;align-items:center;background:#13112b;border:1px solid #2a2660;border-radius:10px;padding:10px 14px;margin:5px 0;text-decoration:none;">
+            <span style="color:#e0e7ff;font-size:0.9rem;">🚔 Police</span><b style="color:#818cf8;font-size:1.05rem;">100</b></a>
+        <a href="tel:101" style="display:flex;justify-content:space-between;align-items:center;background:#13112b;border:1px solid #2a2660;border-radius:10px;padding:10px 14px;margin:5px 0;text-decoration:none;">
+            <span style="color:#e0e7ff;font-size:0.9rem;">🔥 Fire</span><b style="color:#818cf8;font-size:1.05rem;">101</b></a>
+        <a href="tel:1033" style="display:flex;justify-content:space-between;align-items:center;background:#13112b;border:1px solid #2a2660;border-radius:10px;padding:10px 14px;margin:5px 0;text-decoration:none;">
+            <span style="color:#e0e7ff;font-size:0.9rem;">🛣️ Highway</span><b style="color:#818cf8;font-size:1.05rem;">1033</b></a>
+        <a href="tel:112" style="display:flex;justify-content:space-between;align-items:center;background:#4f46e5;border:1px solid #6366f1;border-radius:10px;padding:10px 14px;margin:5px 0;text-decoration:none;">
+            <span style="color:white;font-size:0.9rem;font-weight:700;">🆘 National SOS</span><b style="color:white;font-size:1.05rem;">112</b></a>
     </div>
     """, unsafe_allow_html=True)
 
@@ -287,7 +321,7 @@ if st.session_state.services:
     nearest = get_nearest_hospital(st.session_state.services)
     if nearest:
         phone = nearest.get("phone","").strip()
-        href = f"tel:{phone}" if phone else "tel:108"
+        href  = f"tel:{phone}" if phone else "tel:108"
         label = "📞 Call Now" if phone else "📞 Call 108"
         phone_txt = f"📞 {phone}" if phone else "No phone — tap calls 108"
         st.markdown(f"""
@@ -309,7 +343,13 @@ with tab1:
         lat, lon, _ = st.session_state.user_location
         total = sum(len(v) for v in st.session_state.services.values())
         if total == 0:
-            st.markdown("""<div class="empty"><div style="font-size:2.5rem">🔍</div><div style="font-weight:600;color:#e0e7ff;margin:0.8rem 0 0.3rem;">No services found within 20 km</div><div style="color:#6366f1;font-size:0.88rem;">Please call 112 directly</div></div>""", unsafe_allow_html=True)
+            st.markdown("""
+            <div class="empty">
+                <div style="font-size:2.5rem">🔍</div>
+                <div style="font-weight:600;color:#e0e7ff;margin:0.8rem 0 0.3rem;">No services found within 20 km</div>
+                <div style="color:#6366f1;font-size:0.88rem;">Please call 112 directly</div>
+            </div>
+            """, unsafe_allow_html=True)
         else:
             r = st.session_state.search_radius_used or 0
             r_label = f"{int(r*1000)} m" if r<1 else f"{r:.1f} km"
@@ -321,13 +361,13 @@ with tab1:
                 st_folium(m, width=None, height=450)
             with col2:
                 st.markdown('<span class="sec-label">Nearest Services</span>', unsafe_allow_html=True)
-                icons = {"hospitals":"🏥","police":"🚔","ambulance":"🚑"}
+                icons  = {"hospitals":"🏥","police":"🚔","ambulance":"🚑"}
                 colors = {"hospitals":"#dc2626","police":"#2563eb","ambulance":"#d97706"}
                 for stype, places in st.session_state.services.items():
                     if places:
                         for p in places[:2]:
                             ph = p.get("phone","")
-                            c = colors.get(stype,"#4f46e5")
+                            c  = colors.get(stype,"#4f46e5")
                             call_html = f'<a href="tel:{ph}" class="call-svc">📞 Call</a>' if ph else ''
                             st.markdown(f"""
                             <div class="svc" style="border-left-color:{c}">
@@ -337,13 +377,25 @@ with tab1:
                             </div>
                             """, unsafe_allow_html=True)
     else:
-        st.markdown("""<div class="empty"><div style="font-size:3rem">🗺️</div><div style="font-weight:600;font-size:1rem;color:#e0e7ff;margin:1rem 0 0.4rem;">Click GPS → location auto-loads & searches</div><div style="color:#6366f1;font-size:0.88rem;">Searches from 500 m and expands until services found</div></div>""", unsafe_allow_html=True)
+        st.markdown("""
+        <div class="empty">
+            <div style="font-size:3rem">🗺️</div>
+            <div style="font-weight:600;font-size:1rem;color:#e0e7ff;margin:1rem 0 0.4rem;">
+                Click GPS → Allow → Click green button → Done!
+            </div>
+            <div style="color:#6366f1;font-size:0.88rem;">
+                Searches from 500 m and expands until services found
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
 
 with tab2:
     col1, col2 = st.columns([3,2])
     with col1:
         st.markdown('<span class="sec-label">Describe the Accident</span>', unsafe_allow_html=True)
-        situation = st.text_area("", placeholder="e.g. Two vehicles collided on NH65. One person unconscious, another bleeding...", height=160, label_visibility="collapsed")
+        situation = st.text_area("",
+            placeholder="e.g. Two vehicles collided on NH65. One person unconscious, another bleeding...",
+            height=160, label_visibility="collapsed")
         if st.button("⚡  Get AI Emergency Guidance"):
             if situation.strip():
                 loc_info = st.session_state.user_location[2] if st.session_state.user_location else "India"
@@ -355,11 +407,31 @@ with tab2:
                 st.warning("Please describe the accident situation first.")
     with col2:
         st.markdown('<span class="sec-label">Quick Reference</span>', unsafe_allow_html=True)
-        st.markdown("""<div class="ref"><div style="color:#818cf8;font-weight:700;margin-bottom:8px;">✅ DO IMMEDIATELY</div>① Call <b>112</b> right away<br>② Switch on hazard lights<br>③ Keep victim still &amp; calm<br>④ Press cloth on wounds<br>⑤ Stay on call with operator<br><br><div style="color:#f87171;font-weight:700;margin-bottom:8px;">❌ NEVER DO THIS</div>✗ Move unconscious victims<br>✗ Remove helmet yourself<br>✗ Give water/food to victim<br>✗ Leave the victim alone<br>✗ Crowd around the injured</div>""", unsafe_allow_html=True)
+        st.markdown("""
+        <div class="ref">
+            <div style="color:#818cf8;font-weight:700;margin-bottom:8px;">✅ DO IMMEDIATELY</div>
+            ① Call <b>112</b> right away<br>
+            ② Switch on hazard lights<br>
+            ③ Keep victim still &amp; calm<br>
+            ④ Press cloth on wounds<br>
+            ⑤ Stay on call with operator<br><br>
+            <div style="color:#f87171;font-weight:700;margin-bottom:8px;">❌ NEVER DO THIS</div>
+            ✗ Move unconscious victims<br>
+            ✗ Remove helmet yourself<br>
+            ✗ Give water/food to victim<br>
+            ✗ Leave the victim alone<br>
+            ✗ Crowd around the injured
+        </div>
+        """, unsafe_allow_html=True)
 
 with tab3:
     st.markdown('<span class="sec-label">Chat with RoadSoS AI</span>', unsafe_allow_html=True)
-    st.markdown("""<div class="tip">💡 Ask anything — "What do I do if someone is unconscious?", "How to stop bleeding?", "Is it safe to move the victim?"</div>""", unsafe_allow_html=True)
+    st.markdown("""
+    <div class="tip">
+        💡 Ask anything — "What do I do if someone is unconscious?",
+        "How to stop bleeding?", "Is it safe to move the victim?"
+    </div>
+    """, unsafe_allow_html=True)
     for msg in st.session_state.chat_history:
         with st.chat_message(msg["role"]):
             st.write(msg["content"])
