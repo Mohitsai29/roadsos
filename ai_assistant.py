@@ -1,109 +1,84 @@
 import streamlit as st
 import requests
-import json
 
 def get_key():
     try:
         return st.secrets["GEMINI_API_KEY"]
-    except:
+    except Exception:
         import os
         return os.getenv("GEMINI_API_KEY", "")
 
 def call_gemini(prompt):
     key = get_key()
     if not key:
-        raise ValueError("No API key")
+        raise ValueError("No API key found")
 
-    url = f"https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key={key}"
+    endpoints = [
+        f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={key}",
+        f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key={key}",
+        f"https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key={key}",
+    ]
 
     payload = {
         "contents": [{"parts": [{"text": prompt}]}],
-        "generationConfig": {
-            "temperature": 0.3,
-            "maxOutputTokens": 1024
-        }
+        "generationConfig": {"temperature": 0.3, "maxOutputTokens": 1024}
     }
 
-    response = requests.post(url, json=payload, timeout=30)
+    for url in endpoints:
+        try:
+            r = requests.post(url, json=payload, timeout=30)
+            if r.status_code == 200:
+                return r.json()["candidates"][0]["content"]["parts"][0]["text"]
+        except Exception:
+            continue
 
-    if response.status_code == 200:
-        data = response.json()
-        return data["candidates"][0]["content"]["parts"][0]["text"]
-    else:
-        # Try v1beta with gemini-1.5-flash
-        url2 = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={key}"
-        response2 = requests.post(url2, json=payload, timeout=30)
-        if response2.status_code == 200:
-            data2 = response2.json()
-            return data2["candidates"][0]["content"]["parts"][0]["text"]
-        else:
-            raise Exception(f"API Error {response2.status_code}: {response2.text[:200]}")
+    raise Exception("All Gemini endpoints failed. Please check your API key.")
 
 def get_ai_guidance(situation, location_info):
     try:
-        prompt = f"""You are RoadSoS, an emergency AI assistant for road accident victims in India.
-Location: {location_info}
-
-Give SPECIFIC emergency guidance for this exact situation.
-Format:
-1. IMMEDIATE STEPS (numbered, specific)
-2. WHO TO CALL (India numbers)
-3. WHAT NOT TO DO
-4. WHILE WAITING FOR HELP
-
-Be specific. Not generic. Clear and calm.
-End with: "Help is being located. Stay calm."
-
-Situation: {situation}"""
-
+        prompt = (
+            "You are RoadSoS, an emergency AI assistant for road accident victims in India.\n"
+            "Location: " + location_info + "\n\n"
+            "Give SPECIFIC emergency guidance for this exact situation.\n"
+            "Format:\n"
+            "1. IMMEDIATE STEPS (numbered, specific)\n"
+            "2. WHO TO CALL (India numbers)\n"
+            "3. WHAT NOT TO DO\n"
+            "4. WHILE WAITING FOR HELP\n\n"
+            "Be specific. Not generic. Clear and calm.\n"
+            "End with: Help is being located. Stay calm.\n\n"
+            "Situation: " + situation
+        )
         return call_gemini(prompt)
-
     except Exception as e:
-        return f"""**Emergency Guidance** (AI unavailable - {str(e)[:100]})
-
-**Call immediately:**
-- 112 (National Emergency)
-- 108 (Ambulance)
-- 100 (Police)
-
-**Basic steps:**
-1. Ensure safety - move away from traffic
-2. Call 112 immediately
-3. Do not move unconscious victims
-4. Apply pressure to bleeding wounds
-5. Keep victim calm and conscious
-
-Help is being located. Stay calm."""
+        return (
+            "AI unavailable (" + str(e)[:100] + ")\n\n"
+            "Call immediately:\n"
+            "112 - National Emergency\n"
+            "108 - Ambulance\n"
+            "100 - Police\n\n"
+            "Basic steps:\n"
+            "1. Move away from traffic\n"
+            "2. Call 112 immediately\n"
+            "3. Do not move unconscious victims\n"
+            "4. Apply pressure to bleeding wounds\n"
+            "5. Keep victim calm and conscious\n\n"
+            "Help is being located. Stay calm."
+        )
 
 def chat_with_ai(history, new_message, location_info):
     try:
-        context = "\n".join([
-            f"{m['role'].upper()}: {m['content']}"
-            for m in history[-4:]
-        ])
+        context = ""
+        for m in history[-4:]:
+            context += m["role"].upper() + ": " + m["content"] + "\n"
 
-        prompt = f"""You are RoadSoS, an emergency assistant for road accidents in India.
-Location: {location_info}
-
-Previous conversation:
-{context}
-
-Give specific, accurate, actionable advice.
-
-User: {new_message}"""
-
+        prompt = (
+            "You are RoadSoS, an emergency assistant for road accidents in India.\n"
+            "Location: " + location_info + "\n\n"
+            "Previous conversation:\n" + context + "\n"
+            "Give specific, accurate, actionable advice.\n\n"
+            "User: " + new_message
+        )
         return call_gemini(prompt)
-
     except Exception as e:
-        return f"AI unavailable ({str(e)[:100]}). Please call 112 for emergency help."
-```
-
-**6.** Also update `requirements.txt` — remove `anthropic`, keep it as:
-```
-streamlit
-requests
-folium
-streamlit-folium
-google-generativeai
-python-dotenv
-geopy
+        return "AI unavailable (" + str(e)[:100] + "). Please call 112 for emergency help."
