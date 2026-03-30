@@ -8,31 +8,39 @@ def get_key():
         import os
         return os.getenv("GEMINI_API_KEY", "")
 
+def list_models():
+    key = get_key()
+    url = f"https://generativelanguage.googleapis.com/v1beta/models?key={key}"
+    r = requests.get(url, timeout=10)
+    if r.status_code == 200:
+        models = r.json().get("models", [])
+        return [m["name"] for m in models if "generateContent" in m.get("supportedGenerationMethods", [])]
+    return []
+
 def call_gemini(prompt):
     key = get_key()
     if not key:
         raise ValueError("No API key found")
 
-    endpoints = [
-        f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={key}",
-        f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key={key}",
-        f"https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key={key}",
-    ]
+    models = list_models()
+    if not models:
+        raise ValueError("No models available for this API key")
 
     payload = {
         "contents": [{"parts": [{"text": prompt}]}],
         "generationConfig": {"temperature": 0.3, "maxOutputTokens": 1024}
     }
 
-    for url in endpoints:
+    for model in models:
         try:
+            url = f"https://generativelanguage.googleapis.com/v1beta/{model}:generateContent?key={key}"
             r = requests.post(url, json=payload, timeout=30)
             if r.status_code == 200:
                 return r.json()["candidates"][0]["content"]["parts"][0]["text"]
         except Exception:
             continue
 
-    raise Exception("All Gemini endpoints failed. Please check your API key.")
+    raise Exception("Available models: " + str(models[:3]))
 
 def get_ai_guidance(situation, location_info):
     try:
@@ -40,10 +48,10 @@ def get_ai_guidance(situation, location_info):
             "You are RoadSoS, an emergency AI assistant for road accident victims in India.\n"
             "Location: " + location_info + "\n\n"
             "Give SPECIFIC emergency guidance for this exact situation.\n"
-            "Format:\n"
-            "1. IMMEDIATE STEPS (numbered, specific)\n"
-            "2. WHO TO CALL (India numbers)\n"
-            "3. WHAT NOT TO DO\n"
+            "Format your response with these sections:\n"
+            "1. IMMEDIATE STEPS (numbered, specific to situation)\n"
+            "2. WHO TO CALL (India emergency numbers)\n"
+            "3. WHAT NOT TO DO (specific to situation)\n"
             "4. WHILE WAITING FOR HELP\n\n"
             "Be specific. Not generic. Clear and calm.\n"
             "End with: Help is being located. Stay calm.\n\n"
@@ -52,18 +60,11 @@ def get_ai_guidance(situation, location_info):
         return call_gemini(prompt)
     except Exception as e:
         return (
-            "AI unavailable (" + str(e)[:100] + ")\n\n"
-            "Call immediately:\n"
+            "AI unavailable: " + str(e) + "\n\n"
+            "Please call:\n"
             "112 - National Emergency\n"
             "108 - Ambulance\n"
-            "100 - Police\n\n"
-            "Basic steps:\n"
-            "1. Move away from traffic\n"
-            "2. Call 112 immediately\n"
-            "3. Do not move unconscious victims\n"
-            "4. Apply pressure to bleeding wounds\n"
-            "5. Keep victim calm and conscious\n\n"
-            "Help is being located. Stay calm."
+            "100 - Police"
         )
 
 def chat_with_ai(history, new_message, location_info):
@@ -71,14 +72,13 @@ def chat_with_ai(history, new_message, location_info):
         context = ""
         for m in history[-4:]:
             context += m["role"].upper() + ": " + m["content"] + "\n"
-
         prompt = (
-            "You are RoadSoS, an emergency assistant for road accidents in India.\n"
+            "You are RoadSoS, emergency assistant for road accidents in India.\n"
             "Location: " + location_info + "\n\n"
-            "Previous conversation:\n" + context + "\n"
-            "Give specific, accurate, actionable advice.\n\n"
-            "User: " + new_message
+            "Conversation so far:\n" + context + "\n"
+            "User: " + new_message + "\n\n"
+            "Give specific, actionable emergency advice."
         )
         return call_gemini(prompt)
     except Exception as e:
-        return "AI unavailable (" + str(e)[:100] + "). Please call 112 for emergency help."
+        return "AI unavailable: " + str(e) + ". Call 112 for emergency help."
