@@ -3,13 +3,19 @@ import folium
 COLOR_MAP = {
     "hospitals": "red",
     "police": "blue",
-    "ambulance": "orange"
+    "ambulance": "orange",
+    "towing": "purple",
+    "fuel": "green",
+    "showrooms": "darkblue"
 }
 
 ICON_MAP = {
     "hospitals": "plus-sign",
     "police": "star",
-    "ambulance": "heart"
+    "ambulance": "heart",
+    "towing": "wrench",
+    "fuel": "tint",
+    "showrooms": "shopping-cart"
 }
 
 def create_emergency_map(user_lat, user_lon, services):
