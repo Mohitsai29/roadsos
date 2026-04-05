@@ -19,7 +19,6 @@ def find_nearby_services(lat, lon, radius_km=10):
               node["amenity"~"hospital|clinic|doctors"](around:{radius_m},{lat},{lon});
               way["amenity"~"hospital|clinic|doctors"](around:{radius_m},{lat},{lon});
               node["healthcare"~"hospital|clinic"](around:{radius_m},{lat},{lon});
-              way["healthcare"~"hospital|clinic"](around:{radius_m},{lat},{lon});
             );
             out center;
         """,
@@ -34,8 +33,32 @@ def find_nearby_services(lat, lon, radius_km=10):
         "ambulance": f"""
             [out:json][timeout:25];
             (
-              node["emergency"~"ambulance_station|defibrillator"](around:{radius_m},{lat},{lon});
+              node["emergency"~"ambulance_station"](around:{radius_m},{lat},{lon});
               node["amenity"="hospital"]["emergency"="yes"](around:{radius_m},{lat},{lon});
+            );
+            out center;
+        """,
+        "towing": f"""
+            [out:json][timeout:25];
+            (
+              node["amenity"~"car_repair|vehicle_inspection"](around:{radius_m},{lat},{lon});
+              node["shop"~"car_repair|tyres|vehicle"](around:{radius_m},{lat},{lon});
+              way["shop"~"car_repair|tyres|vehicle"](around:{radius_m},{lat},{lon});
+            );
+            out center;
+        """,
+        "fuel": f"""
+            [out:json][timeout:25];
+            (
+              node["amenity"="fuel"](around:{radius_m},{lat},{lon});
+            );
+            out center;
+        """,
+        "showrooms": f"""
+            [out:json][timeout:25];
+            (
+              node["shop"~"car|motorcycle|bicycle"](around:{radius_m},{lat},{lon});
+              way["shop"~"car|motorcycle"](around:{radius_m},{lat},{lon});
             );
             out center;
         """
@@ -44,7 +67,11 @@ def find_nearby_services(lat, lon, radius_km=10):
     results = {}
     for service_type, query in queries.items():
         try:
-            response = requests.post(overpass_url, data={"data": query}, timeout=20)
+            response = requests.post(
+                overpass_url,
+                data={"data": query},
+                timeout=20
+            )
             data = response.json()
             places = []
             for element in data.get("elements", []):
@@ -60,14 +87,14 @@ def find_nearby_services(lat, lon, radius_km=10):
                     continue
 
                 tags = element.get("tags", {})
-                name = tags.get("name") or tags.get("name:en") or f"Unnamed {service_type.rstrip('s')}"
-                phone = (tags.get("phone") or tags.get("contact:phone") or
-                         tags.get("telephone") or tags.get("contact:telephone") or "")
-                phone = phone.replace(" ", "").replace("-", "")
-                if phone and not phone.startswith("+91") and not phone.startswith("0"):
-                    phone = "+91" + phone
-
+                name = (tags.get("name") or
+                        tags.get("name:en") or
+                        f"Unnamed {service_type}")
+                phone = (tags.get("phone") or
+                         tags.get("contact:phone") or
+                         tags.get("telephone") or "")
                 dist = haversine_distance(lat, lon, place_lat, place_lon)
+
                 places.append({
                     "name": name,
                     "lat": place_lat,
@@ -79,7 +106,7 @@ def find_nearby_services(lat, lon, radius_km=10):
 
             places.sort(key=lambda x: x["distance_km"])
             results[service_type] = places[:5]
-        except Exception as e:
+        except Exception:
             results[service_type] = []
 
     return results
@@ -89,3 +116,24 @@ def get_nearest_hospital(services):
     if hospitals:
         return hospitals[0]
     return None
+
+# Offline fallback data for major Indian cities
+OFFLINE_CONTACTS = {
+    "national": {
+        "emergency": "112",
+        "ambulance": "108",
+        "police": "100",
+        "fire": "101",
+        "highway": "1033",
+        "women": "1091",
+        "child": "1098"
+    },
+    "state_contacts": {
+        "Andhra Pradesh": {"disaster": "1070", "health": "104"},
+        "Telangana": {"disaster": "1070", "health": "104"},
+        "Karnataka": {"disaster": "1070", "health": "104"},
+        "Tamil Nadu": {"disaster": "1070", "health": "104"},
+        "Maharashtra": {"disaster": "1070", "health": "104"},
+        "Delhi": {"disaster": "1070", "health": "104"},
+    }
+}
