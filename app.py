@@ -4,7 +4,6 @@ from emergency_finder import find_nearby_services, get_nearest_hospital, OFFLINE
 from map_module import create_emergency_map
 from geopy.geocoders import Nominatim
 import base64
-import os
 
 st.set_page_config(page_title="RoadSoS", page_icon="🚨", layout="wide")
 
@@ -56,8 +55,6 @@ section[data-testid="stSidebar"] { display: none !important; }
 .svc .sph { color:#6366f1; font-size:0.8rem; margin-top:2px; }
 .svc-dist { display:inline-block; background:#13112b; color:#818cf8; font-size:0.72rem; font-weight:600; padding:2px 10px; border-radius:20px; margin-top:5px; border:1px solid #2a2660; }
 .call-svc { display:inline-block; background:#052e16; color:#34d399 !important; font-size:0.75rem; font-weight:700; padding:2px 12px; border-radius:20px; margin-top:5px; margin-left:6px; text-decoration:none !important; border:1px solid #166534; }
-.offline-card { background:#1e1a3f; border-radius:14px; padding:1rem 1.2rem; margin:0.5rem 0; border:1px solid #2a2660; }
-.offline-num { font-size:1.2rem; font-weight:800; color:#818cf8; }
 .empty { text-align:center; padding:3rem 2rem; background:#13112b; border-radius:18px; border:1px solid #2a2260; }
 .radius-badge { display:inline-flex; align-items:center; gap:6px; background:#1e1a3f; color:#818cf8; border:1px solid #2a2660; border-radius:20px; padding:4px 14px; font-size:0.82rem; font-weight:600; margin-bottom:0.8rem; }
 .loc-found { background:#1e1a3f; border:1px solid #4f46e5; border-radius:10px; padding:0.5rem 1rem; font-size:0.85rem; color:#a5b4fc; margin-top:0.5rem; }
@@ -66,7 +63,6 @@ section[data-testid="stSidebar"] { display: none !important; }
 .stTextInput > div > div > input { border-radius:12px !important; border:1.5px solid #2a2660 !important; color:#e0e7ff !important; font-size:0.93rem !important; padding:0.65rem 1rem !important; background:#1e1a3f !important; }
 .stTextInput > div > div > input::placeholder { color:#6366f1 !important; }
 .stSlider > div > div > div > div { background:#4f46e5 !important; }
-div[data-testid="stChatMessage"] { background:#13112b !important; border-radius:14px !important; border:1px solid #2a2660 !important; margin:0.4rem 0 !important; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -113,9 +109,9 @@ def auto_search(lat, lon, max_radius=20.0):
             st.session_state.search_radius_used = radius
             return services, radius
         radius = round(radius + 0.5, 1)
-    ph.markdown(f"""
+    ph.markdown("""
     <div style="background:#450a0a;border:1px solid #991b1b;border-radius:14px;padding:1rem 1.5rem;margin-bottom:1rem;">
-        <div style="font-size:0.9rem;color:#f87171;font-weight:600;">⚠️ No live services found. Showing offline contacts below.</div>
+        <div style="font-size:0.9rem;color:#f87171;font-weight:600;">⚠️ No live services found. Check Offline Contacts tab.</div>
     </div>
     """, unsafe_allow_html=True)
     st.session_state.search_radius_used = max_radius
@@ -208,7 +204,7 @@ with left:
                     st.session_state.services = services
                     st.rerun()
                 else:
-                    st.error("⚠️ Location not found. Try a different name.")
+                    st.error("⚠️ Location not found.")
     with col2:
         if st.button("🗑️ Clear & Reset"):
             for k in ["user_location","services","search_radius_used"]:
@@ -276,14 +272,13 @@ with tab1:
             <div class="empty">
                 <div style="font-size:2.5rem">📵</div>
                 <div style="font-weight:600;color:#e0e7ff;margin:0.8rem 0 0.3rem;">No live services found</div>
-                <div style="color:#6366f1;font-size:0.88rem;">Check Offline Contacts tab for emergency numbers</div>
+                <div style="color:#6366f1;font-size:0.88rem;">Check Offline Contacts tab · Try increasing radius</div>
             </div>
             """, unsafe_allow_html=True)
         else:
             r = st.session_state.search_radius_used or 0
             r_label = f"{int(r*1000)} m" if r<1 else f"{r:.1f} km"
             st.markdown(f'<div class="radius-badge">🔍 Services within <b>&nbsp;{r_label}&nbsp;</b> of your location</div>', unsafe_allow_html=True)
-
             col1, col2 = st.columns([3,2])
             with col1:
                 st.markdown('<span class="sec-label">Live Emergency Map</span>', unsafe_allow_html=True)
@@ -335,19 +330,17 @@ with tab1:
 with tab2:
     st.markdown('<span class="sec-label">📵 Offline Emergency Contacts — Works Without Internet</span>', unsafe_allow_html=True)
     st.markdown("""
-    <div style="background:#052e16;border:1px solid #166534;border-radius:12px;padding:0.8rem 1rem;margin-bottom:1rem;font-size:0.85rem;color:#34d399;">
-        ℹ️ These contacts work even without internet connection. Save them on your phone!
+    <div style="background:#052e16;border:1px solid #166534;border-radius:12px;
+         padding:0.8rem 1rem;margin-bottom:1rem;font-size:0.85rem;color:#34d399;">
+        ℹ️ These contacts work even without internet. Save them on your phone!
     </div>
     """, unsafe_allow_html=True)
 
-    nc = OFFLINE_CONTACTS["national"]
     col1, col2, col3 = st.columns(3)
-
     with col1:
         st.markdown("""
         <div style="background:#1e1a3f;border-radius:14px;padding:1rem;border:1px solid #2a2660;margin-bottom:0.8rem;">
             <div style="font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:1.4px;color:#6366f1;margin-bottom:0.8rem;">🆘 Emergency</div>
-        """ + f"""
             <a href="tel:112" style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #2a2660;text-decoration:none;">
                 <span style="color:#e0e7ff;font-size:0.88rem;">🆘 National SOS</span><b style="color:#818cf8;">112</b></a>
             <a href="tel:108" style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #2a2660;text-decoration:none;">
