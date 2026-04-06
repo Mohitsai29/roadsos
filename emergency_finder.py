@@ -1,6 +1,16 @@
 import requests
 from math import radians, sin, cos, sqrt, atan2
 
+OFFLINE_CONTACTS = {
+    "national": {
+        "emergency": "112",
+        "ambulance": "108",
+        "police": "100",
+        "fire": "101",
+        "highway": "1033"
+    }
+}
+
 def haversine_distance(lat1, lon1, lat2, lon2):
     R = 6371
     dlat = radians(lat2 - lat1)
@@ -116,24 +126,3 @@ def get_nearest_hospital(services):
     if hospitals:
         return hospitals[0]
     return None
-
-# Offline fallback data for major Indian cities
-OFFLINE_CONTACTS = {
-    "national": {
-        "emergency": "112",
-        "ambulance": "108",
-        "police": "100",
-        "fire": "101",
-        "highway": "1033",
-        "women": "1091",
-        "child": "1098"
-    },
-    "state_contacts": {
-        "Andhra Pradesh": {"disaster": "1070", "health": "104"},
-        "Telangana": {"disaster": "1070", "health": "104"},
-        "Karnataka": {"disaster": "1070", "health": "104"},
-        "Tamil Nadu": {"disaster": "1070", "health": "104"},
-        "Maharashtra": {"disaster": "1070", "health": "104"},
-        "Delhi": {"disaster": "1070", "health": "104"},
-    }
-}
